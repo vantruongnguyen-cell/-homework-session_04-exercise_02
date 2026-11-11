@@ -1,0 +1,12 @@
+CƠ CHẾ HEALTHCHECK VÀ VOLUMES TRONG DOCKER COMPOSE:
+
+1. Healthcheck:
+- postgres: Sử dụng lệnh "pg_isready -U admin -d storex_db" để kiểm tra xem PostgreSQL đã sẵn sàng nhận kết nối CSDL chưa.
+- redis: Sử dụng lệnh "redis-cli ping" để đảm bảo Redis phản hồi PONG.
+- Cả 2 service đều được cấu hình kiểm tra mỗi 5s (interval: 5s), timeout 5s, và thử lại tối đa 5 lần.
+
+2. Service Dependency (depends_on):
+- Service backend sử dụng "condition: service_healthy" đối với cả postgres và redis. Cơ chế này bắt buộc backend chỉ được phép khởi động sau khi cả Database và Redis đã đạt trạng thái Healthy hoàn toàn.
+
+3. Volumes (Lưu trữ dữ liệu bền vững):
+- Khai báo Named Volume "postgres_data" và mount vào thư mục "/var/lib/postgresql/data" của container postgres. Giúp dữ liệu không bị mất khi thực hiện lệnh docker compose down.
